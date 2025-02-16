@@ -1,0 +1,91 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: istio-ingressgateway
+  namespace: asm-gateway # Add namespace
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: istio-ingressgateway
+      istio: ingressgateway
+  template:
+    metadata:
+      annotations:
+        inject.istio.io/templates: gateway
+      labels:
+        app: istio-ingressgateway
+        istio: ingressgateway
+    spec:
+      containers:
+      - name: istio-proxy
+        image: auto
+        resources:
+          limits:
+            memory: 256Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+      serviceAccountName: istio-ingressgateway
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: istio-ingressgateway
+  namespace: asm-gateway
+  annotations:
+    cloud.google.com/load-balancer-type: "Internal"
+  labels:
+    app: istio-ingressgateway
+    istio: ingressgateway
+spec:
+  ports:
+  - name: status-port
+    port: 15021
+    protocol: TCP
+    targetPort: 15021
+  - name: http2
+    port: 80
+  - name: https
+    port: 443
+  selector:
+    istio: ingressgateway
+    app: istio-ingressgateway
+  type: LoadBalancer
+
+--- 
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: my-istio-gateway
+  namespace: asm-gateway
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*" # Match all hosts (or specify your domain)
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: my-service-vs
+  namespace: asm-gateway # Same namespace as the Istio Gateway
+spec:
+  hosts:
+  - "*" # Match all hosts (or specify your domain)
+  gateways:
+  - my-istio-gateway
+  http:
+  - route:
+    - destination:
+        host: simple-http-service.my-mesh.svc.cluster.local  # Include the namespace here
+        port:
+          number: 80
