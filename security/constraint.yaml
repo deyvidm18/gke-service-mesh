@@ -1,7 +1,7 @@
 apiVersion: constraints.gatekeeper.sh/v1beta1
 kind: K8sRequiredLabels
 metadata:
-  name: ss-must-have-team-label
+  name: pod-must-have-team-label
 spec:
   match:
     kinds:
