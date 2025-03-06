@@ -3,7 +3,6 @@ kind: Namespace
 metadata:
   name: my-mesh
   labels:
-    istio.io/rev: asm-managed-rapid
     istio-injection: enabled
 ---   
 apiVersion: apps/v1
