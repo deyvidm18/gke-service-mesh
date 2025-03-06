@@ -9,10 +9,12 @@ spec:
   containers:
   - name: simple-pod
     image: nginx:alpine
-    requests:
-      cpu: 250m
-      memory: 256Mi
-    limits:
-      memory: 256Mi
+    resources:
+      requests:
+        cpu: 250m
+        memory: 256Mi
+      limits:
+        memory: 256Mi
+        cpu: 250m
     ports:
     - containerPort: 80
