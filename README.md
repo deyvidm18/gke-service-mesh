@@ -1,6 +1,6 @@
 ## GKE Gateway and Istio Gateway Integration with mTLS and Gatekeeper Constraint
 
-This repository demonstrates how to integrate GKE Gateway with Istio Gateway to manage ingress traffic in a Google Kubernetes Engine (GKE) cluster, while enforcing strict mTLS within the Istio service mesh. It also includes an optional Gatekeeper constraint to ensure that newly created namespaces are automatically labeled for Istio sidecar injection.
+This repository demonstrates how to integrate GKE Gateway with Istio Gateway to manage ingress traffic in a Google Kubernetes Engine (GKE) cluster, while enforcing strict mTLS within the Istio service mesh. It also includes an optional Gatekeeper constraint to ensure that newly created namespaces are automatically labeled for Istio sidecar injection.  Additionally, it demonstrates JWT authentication for a microservice.
 
 **Key Features**
 
@@ -8,6 +8,7 @@ This repository demonstrates how to integrate GKE Gateway with Istio Gateway to 
 * **Istio Gateway:** Manages internal traffic routing and mTLS within the Istio service mesh.
 * **Strict mTLS:** Enforces mutual TLS authentication between all services within the mesh, enhancing security.
 * **Gatekeeper Constraint (Optional):** Ensures that new namespaces are automatically labeled for Istio sidecar injection, simplifying mesh expansion.
+* **JWT Authentication:**  Secures a microservice (`simple-http-server`) using JSON Web Tokens (JWTs) and Istio's authentication capabilities.
 
 **Components**
 
@@ -17,6 +18,9 @@ This repository demonstrates how to integrate GKE Gateway with Istio Gateway to 
 * **Istio VirtualService:** Routes traffic from the Istio Gateway to specific services.
 * **Gatekeeper ConstraintTemplate and Constraint:** Enforces the required labels for new namespaces.
 * **`curl-test-pod`:** A pod with `curl` installed for testing connectivity to services within the mesh.
+* **`jwt-generator/main.py`:** A Python script to generate JWTs for authentication.
+* **`jwt-auth.yaml`:** Istio configuration for JWT authentication and authorization.
+
 
 **Deployment**
 
@@ -24,18 +28,22 @@ This repository demonstrates how to integrate GKE Gateway with Istio Gateway to 
    * A GKE Enterprise cluster with Cloud Service Mesh enabled
    * A GKE cluster with the Gateway API enabled.
    * Gatekeeper installed (optional).
+   * A Google Cloud Service Account with appropriate permissions (for JWT generation).
 
 2. **Configure and Deploy:**
-   * Modify the provided YAML files to match your environment (e.g., IP addresses, domain names, namespaces).
+   * Modify the provided YAML files to match your environment (e.g., IP addresses, domain names, namespaces).  Pay close attention to the `jwt-auth.yaml` file and ensure the `issuer` and `jwks` values are correct for your service account.
    * Apply the GKE Gateway, Istio Gateway, VirtualService, and any other necessary Istio resources.
+   * Apply the `jwt-auth.yaml` file to enable JWT authentication.
    * If using Gatekeeper, deploy the ConstraintTemplate and Constraint.
    * Deploy the `curl-test-pod` to the `test` namespace.
+   * Run `jwt-generator/main.py` with your service account key file to generate a JWT.  Use this JWT in the `Authorization` header of requests to the `simple-http-server` service.
 
 **Usage**
 
 * **Access your applications through the GKE Gateway's external IP address.**
 * Istio will manage internal traffic routing and enforce mTLS within the mesh.
 * The Gatekeeper constraint (if enabled) will forces labels on new namespaces for Istio sidecar injection.
+* Access the `simple-http-server` service using a JWT for authentication.
 
 **Testing with `curl-test-pod`**
 
@@ -72,7 +80,6 @@ This repository demonstrates how to integrate GKE Gateway with Istio Gateway to 
 
 The included Gatekeeper constraint enforces the following labels on new namespaces:
 
-* `istio.io/rev`: Associates the namespace with a specific revision of Anthos Service Mesh (ASM).
 * `istio-injection`: Enables automatic sidecar injection for services in the namespace.
 
 This ensures that new namespaces are automatically integrated into the Istio service mesh, simplifying management and maintaining consistency.
