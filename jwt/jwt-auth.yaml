@@ -31,7 +31,7 @@ spec:
         paths: ["/jwt-val"] # Rule for /jwt-validatiobn JWT check
     when:
     - key: request.auth.principal
-      values: ["*"] #This should be replaced with your actual principal values if you want to restrict to specific users. 
+      values: ["jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com/jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"] # issuer/sub of the JWT 
   - to:
     - operation:
         # This rule applies to requests whose path is NOT /jwt-val
