@@ -22,25 +22,25 @@ spec:
     spec:
       containers:
       - name: simple-http-server
-        image: nginx:alpine
+        image: us-east4-docker.pkg.dev/db-demo-gke-ent/my-docker/dummy-app:latest
         ports:
-        - containerPort: 80
+        - containerPort: 8080
         resources:
           requests:
-            cpu: 250m
+            cpu: 100m
             memory: 256Mi
           limits:
             memory: 256Mi
         livenessProbe:
-          httpGet:  # Use httpGet instead of tcpSocket
-            path: /
-            port: 80
+          httpGet:
+            path: /health
+            port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
         readinessProbe:
-          httpGet: # Use httpGet instead of tcpSocket
-            path: /
-            port: 80
+          httpGet:
+            path: /health
+            port: 8080
           initialDelaySeconds: 5
           periodSeconds: 10
       terminationGracePeriodSeconds: 30
@@ -56,5 +56,5 @@ spec:
   ports:
     - protocol: TCP
       port: 80
-      targetPort: 80
+      targetPort: 8080
   type: ClusterIP
