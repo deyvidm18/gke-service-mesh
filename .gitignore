@@ -81,6 +81,16 @@ venv/
 *.diff
 *.patch
 
+# Go
+*.go
+*.go.bak
+*.go~
+bin/
+pkg/
+Godeps/_workspace/
+Godeps/
+vendor/
+
 # Private folder
 private/
 
