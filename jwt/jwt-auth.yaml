@@ -2,24 +2,24 @@ apiVersion: "security.istio.io/v1beta1"
 kind: "RequestAuthentication"
 metadata:
   name: "jwt"
-  namespace: my-mesh
+  namespace: istio-system
 spec:
   selector:
     matchLabels:
       app: simple-http-server
   jwtRules:
-  - forwardOriginalToken: true
+  - forwardOriginalToken: false
     issuer: "jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"
-    jwks: |
-      { "keys": [{"n": "vfOHxJzTwiamuPu1UHM6SOC5fbbNY_p3PFKiPSyJszINWdy78nNubobsjsnQxUHdntM-R7MhEbDPwAs2tzCnUck5R7jl_1NwszEAUeJCFlqVqWSRGCFoC5x19SAl6r52DV5fQApv7xTSNquNfmXxqykoq7kO_DjfWEtPEyT03bYGHNzwjnjhn_FqJ-K29fT31k7_9LSj2p3Q0bahDOwZiVjAvVF8efVjKT35iZoaKWm0r2qfwwCP4D-gL5wzboyzhyfJjQvYhL7TzTHvsYol403h239l5nAKpUmWDg5MCaiLjcGJT_rIZumI3FPIFRgMbTt4NrVhPzzWqANc9uTH-w","kty": "RSA","alg": "RS256","e": "AQAB","kid": "c3cfed78d6f48dbc961f51440be2336803ec39a7","use": "sig" }]}
-    #jwksUri: "https://www.googleapis.com/service_accounts/v1/jwk/jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"
-    #jwksUri: "https://www.googleapis.com/robot/v1/metadata/x509/jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"
+    jwksUri: "https://www.googleapis.com/service_accounts/v1/jwk/jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"
+    # ESTO FUNCIONA!
+    #jwks: |
+    #{ "keys": [{"n": "vfOHxJzTwiamuPu1UHM6SOC5fbbNY_p3PFKiPSyJszINWdy78nNubobsjsnQxUHdntM-R7MhEbDPwAs2tzCnUck5R7jl_1NwszEAUeJCFlqVqWSRGCFoC5x19SAl6r52DV5fQApv7xTSNquNfmXxqykoq7kO_DjfWEtPEyT03bYGHNzwjnjhn_FqJ-K29fT31k7_9LSj2p3Q0bahDOwZiVjAvVF8efVjKT35iZoaKWm0r2qfwwCP4D-gL5wzboyzhyfJjQvYhL7TzTHvsYol403h239l5nAKpUmWDg5MCaiLjcGJT_rIZumI3FPIFRgMbTt4NrVhPzzWqANc9uTH-w","kty": "RSA","alg": "RS256","e": "AQAB","kid": "c3cfed78d6f48dbc961f51440be2336803ec39a7","use": "sig" }]}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: require-jwt
-  namespace: my-mesh
+  namespace: istio-system
 spec:
   selector:
     matchLabels:
@@ -36,4 +36,31 @@ spec:
     - operation:
         # This rule applies to requests whose path is NOT /jwt-val
         notPaths: ["/jwt-val"]   
-     
+---
+apiVersion: networking.istio.io/v1beta1
+kind: DestinationRule
+metadata:
+  name: googleapis
+  namespace: istio-system
+spec:
+  host: www.googleapis.com
+  trafficPolicy:
+    tls:
+      mode: SIMPLE
+      sni: www.googleapis.com
+---
+apiVersion: networking.istio.io/v1beta1
+kind: ServiceEntry
+metadata:
+  name: googleapis
+  namespace: istio-system
+spec:
+  hosts:
+  - www.googleapis.com
+  ports:
+  - number: 443
+    name: https
+    protocol: HTTPS
+  resolution: DNS
+  location: MESH_EXTERNAL
+       

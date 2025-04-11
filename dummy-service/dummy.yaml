@@ -54,7 +54,8 @@ spec:
   selector:
     app: simple-http-server
   ports:
-    - protocol: TCP
+    - name: http-simmple
+      protocol: TCP
       port: 80
       targetPort: 8080
   type: ClusterIP
