@@ -10,10 +10,8 @@ spec:
   jwtRules:
   - forwardOriginalToken: false
     issuer: "jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"
-    jwksUri: "https://www.googleapis.com/service_accounts/v1/jwk/jwt-signer@db-demo-gke-ent.iam.gserviceaccount.com"
-    # ESTO FUNCIONA!
-    #jwks: |
-    #{ "keys": [{"n": "vfOHxJzTwiamuPu1UHM6SOC5fbbNY_p3PFKiPSyJszINWdy78nNubobsjsnQxUHdntM-R7MhEbDPwAs2tzCnUck5R7jl_1NwszEAUeJCFlqVqWSRGCFoC5x19SAl6r52DV5fQApv7xTSNquNfmXxqykoq7kO_DjfWEtPEyT03bYGHNzwjnjhn_FqJ-K29fT31k7_9LSj2p3Q0bahDOwZiVjAvVF8efVjKT35iZoaKWm0r2qfwwCP4D-gL5wzboyzhyfJjQvYhL7TzTHvsYol403h239l5nAKpUmWDg5MCaiLjcGJT_rIZumI3FPIFRgMbTt4NrVhPzzWqANc9uTH-w","kty": "RSA","alg": "RS256","e": "AQAB","kid": "c3cfed78d6f48dbc961f51440be2336803ec39a7","use": "sig" }]}
+    jwks: |
+      { "keys": [{"n": "vfOHxJzTwiamuPu1UHM6SOC5fbbNY_p3PFKiPSyJszINWdy78nNubobsjsnQxUHdntM-R7MhEbDPwAs2tzCnUck5R7jl_1NwszEAUeJCFlqVqWSRGCFoC5x19SAl6r52DV5fQApv7xTSNquNfmXxqykoq7kO_DjfWEtPEyT03bYGHNzwjnjhn_FqJ-K29fT31k7_9LSj2p3Q0bahDOwZiVjAvVF8efVjKT35iZoaKWm0r2qfwwCP4D-gL5wzboyzhyfJjQvYhL7TzTHvsYol403h239l5nAKpUmWDg5MCaiLjcGJT_rIZumI3FPIFRgMbTt4NrVhPzzWqANc9uTH-w","kty": "RSA","alg": "RS256","e": "AQAB","kid": "c3cfed78d6f48dbc961f51440be2336803ec39a7","use": "sig" }]}
 ---
 apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
